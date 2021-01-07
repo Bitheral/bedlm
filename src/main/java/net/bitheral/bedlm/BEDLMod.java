@@ -1,7 +1,14 @@
 package net.bitheral.bedlm;
 
+import net.bitheral.bedlm.init.Items;
+import net.bitheral.bedlm.setup.Reference;
+import net.bitheral.bedlm.setup.RegistrationEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,13 +26,29 @@ import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("bedlm")
-public class ExampleMod
+@Mod(Reference.MODID)
+public class BEDLMod
 {
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ExampleMod() {
+    public static final ItemGroup PANDEMIC_GROUP = new ItemGroup("bedlm_pandemic") {
+        @OnlyIn(Dist.CLIENT)
+        public ItemStack createIcon() {
+            return new ItemStack(Items.MASK.get());
+        }
+    };
+
+    public static final ItemGroup TECHNOLOGY_GROUP = new ItemGroup("bedlm_technology") {
+        @OnlyIn(Dist.CLIENT)
+        public ItemStack createIcon() {
+            return new ItemStack(Items.SMARTPHONE.get());
+        }
+    };
+
+    public BEDLMod() {
+        RegistrationEvents.register();
+
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the enqueueIMC method for modloading
@@ -54,7 +77,7 @@ public class ExampleMod
     private void enqueueIMC(final InterModEnqueueEvent event)
     {
         // some example code to dispatch IMC to another mod
-        InterModComms.sendTo("bedlm", "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
+        InterModComms.sendTo(Reference.MODID, "helloworld", () -> { LOGGER.info("Hello world from the MDK"); return "Hello world";});
     }
 
     private void processIMC(final InterModProcessEvent event)
